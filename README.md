@@ -1,8 +1,8 @@
-# Career Guidance Platform
+Career Guidance Platform
 
 A comprehensive, modern, AI-powered Career Guidance Website that helps students and graduates make informed career, education, exam, and job decisions.
 
-## Features
+ Features
 
 ### Core Features
 - 🤖 **AI-Powered Career Recommendations** based on interests, aptitude, personality, education, and skills
