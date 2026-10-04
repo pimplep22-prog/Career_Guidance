@@ -415,3 +415,12 @@ For issues and questions:
 ---
 
 Built with ❤️ to empower the next generation of students.
+
+
+## Team Contributions
+
+- Pooja Pimple – Team Leader & Backend Developer
+- Ankita Bajgire – Database & Content Management
+- Namrata Bhujbal – Frontend Developer
+- Priti Bhusagre – Resercher & Documentation
+- Kaveri Goundgave – UI/UX Designer & Content Researcher
