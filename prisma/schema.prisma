@@ -1,0 +1,520 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  password          String
+  name              String
+  role              String             @default("STUDENT") // "STUDENT" or "ADMIN"
+  dateOfBirth       DateTime?
+  phone             String?
+  location          String?
+  education         String?
+  currentStatus     String? // e.g., "10th Grade", "12th Science", "Graduate"
+  interests         String? // JSON array of interests
+  skills            String? // JSON array of skills
+  preferredLanguage String             @default("en")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  testResults       TestResult[]
+  recommendations   Recommendation[]
+  progress          UserProgress[]
+  notifications     Notification[]
+  feedback          Feedback[]
+  reports           Report[]
+  
+  @@index([email])
+}
+
+model Career {
+  id                String             @id @default(cuid())
+  title             String
+  slug              String             @unique
+  description       String
+  detailedInfo      String // Long detailed description
+  category          String // e.g., "Engineering", "Medical", "Arts", "Business"
+  subCategory       String?
+  averageSalary     String // e.g., "5-10 LPA"
+  salaryRange       String? // e.g., "3-25 LPA"
+  demandLevel       String // "High", "Medium", "Low"
+  futureDemand      String // "Growing", "Stable", "Declining"
+  requiredEducation String // JSON array of degrees
+  requiredSkills    String // JSON array of skills
+  personality       String // JSON array of personality traits that match
+  interests         String // JSON array of matching interests
+  aptitudes         String // JSON array of matching aptitudes
+  jobRoles          String // JSON array of job roles
+  workEnvironment   String?
+  careerPath        String? // JSON array of career progression
+  prosAndCons       String? // JSON object {pros: [], cons: []}
+  topColleges       String? // JSON array of college IDs
+  relatedCourses    String? // JSON array of course IDs
+  relatedExams      String? // JSON array of exam IDs
+  officialLinks     String? // JSON array of {title, url}
+  lastUpdated       DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  recommendations   Recommendation[]
+  roadmaps          CareerRoadmap[]
+  faqs              FAQ[]
+  successStories    SuccessStory[]
+  
+  @@index([slug])
+  @@index([category])
+}
+
+model Course {
+  id                String             @id @default(cuid())
+  title             String
+  slug              String             @unique
+  type              String // "Undergraduate", "Postgraduate", "Diploma", "Certificate"
+  duration          String // e.g., "4 years", "2 years"
+  description       String
+  detailedInfo      String
+  eligibility       String // JSON array of eligibility criteria
+  averageFees       String // e.g., "1-5 Lakhs per year"
+  topColleges       String? // JSON array of college IDs
+  careerOptions     String? // JSON array of career IDs
+  syllabus          String? // JSON array of subjects/topics
+  skills            String? // JSON array of skills gained
+  relatedExams      String? // JSON array of exam IDs
+  officialLinks     String? // JSON array of {title, url}
+  lastUpdated       DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  
+  @@index([slug])
+  @@index([type])
+}
+
+model College {
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  type              String // "Government", "Private", "Deemed"
+  location          String
+  state             String
+  city              String
+  establishedYear   Int?
+  affiliation       String?
+  accreditation     String? // JSON array like ["NAAC A+", "NBA"]
+  ranking           String? // JSON object {nirf: "", outlook: ""}
+  coursesOffered    String // JSON array of course IDs
+  averageFees       String
+  placementRate     String?
+  averagePackage    String?
+  facilities        String? // JSON array
+  admissionProcess  String?
+  cutoffs           String? // JSON object with exam-wise cutoffs
+  contactInfo       String? // JSON object {phone, email, website}
+  officialWebsite   String?
+  lastUpdated       DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  
+  @@index([slug])
+  @@index([state])
+  @@index([city])
+}
+
+model Exam {
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  fullName          String?
+  type              String // "Entrance", "Competitive", "Recruitment"
+  category          String // "Engineering", "Medical", "Government Jobs", etc.
+  conductedBy       String
+  examLevel         String // "National", "State", "University"
+  description       String
+  eligibility       String // JSON array of eligibility criteria
+  examPattern       String? // JSON object with pattern details
+  syllabus          String? // JSON array of topics
+  applicationFee    String?
+  importantDates    String? // JSON object {registration: "", exam: "", result: ""}
+  officialWebsite   String?
+  preparationTips   String? // JSON array
+  relatedCourses    String? // JSON array of course IDs
+  relatedCareers    String? // JSON array of career IDs
+  cutoffs           String? // JSON object with previous years cutoffs
+  lastUpdated       DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  notifications     Notification[]
+  
+  @@index([slug])
+  @@index([category])
+}
+
+model Job {
+  id                String             @id @default(cuid())
+  title             String
+  company           String
+  location          String
+  type              String // "Full-time", "Part-time", "Internship", "Freelance"
+  experience        String // e.g., "0-2 years", "Fresher"
+  salary            String?
+  description       String
+  requirements      String // JSON array
+  skills            String // JSON array
+  applyLink         String?
+  postedDate        DateTime           @default(now())
+  expiryDate        DateTime?
+  isActive          Boolean            @default(true)
+  category          String // Related to career category
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  
+  @@index([category])
+  @@index([type])
+  @@index([isActive])
+}
+
+model Internship {
+  id                String             @id @default(cuid())
+  title             String
+  company           String
+  location          String
+  type              String // "Remote", "On-site", "Hybrid"
+  duration          String // e.g., "2 months", "6 months"
+  stipend           String?
+  description       String
+  requirements      String // JSON array
+  skills            String // JSON array
+  applyLink         String?
+  postedDate        DateTime           @default(now())
+  expiryDate        DateTime?
+  isActive          Boolean            @default(true)
+  category          String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  
+  @@index([category])
+  @@index([type])
+  @@index([isActive])
+}
+
+model Scholarship {
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  provider          String // Government, Private, NGO
+  amount            String
+  description       String
+  eligibility       String // JSON array
+  applicationProcess String?
+  importantDates    String? // JSON object
+  officialLink      String?
+  category          String // "Merit-based", "Need-based", "Sports", etc.
+  targetGroup       String? // "SC/ST", "Female", "General", etc.
+  lastUpdated       DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  
+  @@index([slug])
+  @@index([category])
+}
+
+model LearningResource {
+  id                String             @id @default(cuid())
+  title             String
+  type              String // "Course", "Tutorial", "Video", "Book", "Article"
+  provider          String
+  url               String
+  description       String?
+  category          String // Related to career/skill category
+  isFree            Boolean            @default(true)
+  rating            Float?
+  duration          String? // e.g., "4 weeks", "10 hours"
+  skills            String? // JSON array
+  level             String? // "Beginner", "Intermediate", "Advanced"
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  bookmarks         Bookmark[]
+  
+  @@index([category])
+  @@index([type])
+}
+
+model GovernmentScheme {
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  ministry          String
+  description       String
+  benefits          String // JSON array
+  eligibility       String // JSON array
+  applicationProcess String?
+  officialLink      String?
+  category          String // "Education", "Employment", "Skill Development"
+  targetGroup       String?
+  lastUpdated       DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  @@index([slug])
+  @@index([category])
+}
+
+model Test {
+  id                String             @id @default(cuid())
+  title             String
+  type              String // "Personality", "Interest", "Aptitude"
+  description       String
+  duration          Int // in minutes
+  questions         String // JSON array of questions with options
+  scoring           String // JSON object with scoring logic
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  results           TestResult[]
+  
+  @@index([type])
+}
+
+model TestResult {
+  id                String             @id @default(cuid())
+  userId            String
+  testId            String
+  answers           String // JSON array of answers
+  scores            String // JSON object with scores
+  results           String // JSON object with personality/interest/aptitude results
+  recommendations   String? // JSON array of career recommendations based on test
+  completedAt       DateTime           @default(now())
+  
+  // Relationships
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  test              Test               @relation(fields: [testId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([testId])
+}
+
+model Recommendation {
+  id                String             @id @default(cuid())
+  userId            String
+  careerId          String
+  score             Float // 0-100, how well the career matches
+  reasons           String // JSON array of reasons why recommended
+  basedOn           String // JSON array like ["interests", "skills", "test results"]
+  createdAt         DateTime           @default(now())
+  
+  // Relationships
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  career            Career             @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([careerId])
+  @@index([score])
+}
+
+model CareerRoadmap {
+  id                String             @id @default(cuid())
+  careerId          String
+  title             String
+  steps             String // JSON array of roadmap steps with timelines
+  milestones        String // JSON array of key milestones
+  requiredSkills    String // JSON array of skills needed
+  learningPath      String // JSON array of courses/resources
+  certifications    String? // JSON array of recommended certifications
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  career            Career             @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  
+  @@index([careerId])
+}
+
+model Bookmark {
+  id                String             @id @default(cuid())
+  userId            String
+  type              String // "career", "course", "college", "exam", "job", "internship", "scholarship", "resource"
+  referenceId       String // ID of the bookmarked item
+  notes             String?
+  createdAt         DateTime           @default(now())
+  
+  // Relationships
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  career            Career?            @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  course            Course?            @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  college           College?           @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  exam              Exam?              @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  job               Job?               @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  internship        Internship?        @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  scholarship       Scholarship?       @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  resource          LearningResource?  @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, type, referenceId])
+  @@index([userId])
+  @@index([type])
+}
+
+model UserProgress {
+  id                String             @id @default(cuid())
+  userId            String
+  type              String // "skill", "course", "roadmap"
+  referenceId       String? // ID of course/roadmap if applicable
+  title             String
+  progress          Float // 0-100 percentage
+  milestones        String? // JSON array of completed milestones
+  startedAt         DateTime           @default(now())
+  lastUpdated       DateTime           @updatedAt
+  
+  // Relationships
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([type])
+}
+
+model Notification {
+  id                String             @id @default(cuid())
+  userId            String
+  type              String // "exam", "application", "recommendation", "system"
+  title             String
+  message           String
+  referenceId       String? // ID of related exam/career/etc
+  referenceType     String? // "exam", "career", etc.
+  isRead            Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  
+  // Relationships
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam              Exam?              @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+}
+
+model FAQ {
+  id                String             @id @default(cuid())
+  careerId          String?
+  category          String // "general", "career-specific", "exams", "courses", etc.
+  question          String
+  answer            String
+  language          String             @default("en")
+  views             Int                @default(0)
+  helpful           Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  career            Career?            @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  
+  @@index([category])
+  @@index([careerId])
+}
+
+model SuccessStory {
+  id                String             @id @default(cuid())
+  careerId          String?
+  name              String
+  title             String
+  story             String
+  image             String?
+  achievement       String?
+  advice            String?
+  isPublished       Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  career            Career?            @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  
+  @@index([careerId])
+  @@index([isPublished])
+}
+
+model Feedback {
+  id                String             @id @default(cuid())
+  userId            String
+  type              String // "feature", "bug", "content", "general"
+  subject           String
+  message           String
+  rating            Int? // 1-5 rating
+  status            String             @default("pending") // "pending", "reviewed", "resolved"
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+}
+
+model Report {
+  id                String             @id @default(cuid())
+  userId            String
+  type              String // Type of content: "career", "course", "college", "exam", etc.
+  referenceId       String // ID of the reported content
+  issue             String // "Incorrect Information", "Outdated", "Offensive", etc.
+  description       String
+  status            String             @default("pending") // "pending", "reviewed", "resolved"
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  // Relationships
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+}
+
+model NewsUpdate {
+  id                String             @id @default(cuid())
+  title             String
+  slug              String             @unique
+  content           String
+  category          String // "Career", "Education", "Exams", "Jobs", etc.
+  image             String?
+  source            String?
+  sourceUrl         String?
+  isPublished       Boolean            @default(false)
+  publishedAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  @@index([slug])
+  @@index([category])
+  @@index([isPublished])
+}
